@@ -13,23 +13,18 @@
 <!-- animad elements -->
 <link rel="import" href="animad-enclosure-form.html">
 <link rel="import" href="../animad-icons.html">
-<link rel="import" href="../behaviors/animad-form-behavior.html">
 
-<dom-module id="animad-enclosure-create-form">
+<dom-module id="animad-enclosure-update-form">
     <template>
         <style is="custom-style">
             paper-button.send {
                 background-color: var(--paper-green-500);
                 color: white;
-                margin-top: 20px;
-                margin-bottom: 20px;
+                margin-top: 50px;
                 @apply --animad-enclosure-create-form-button-send;
             }
         </style>
-        <!-- i18n -->
-        <nebula-language
-            supported='["en", "de"]'
-            lang="{{lang}}">
+        <nebula-language supported='["en", "de"]' lang="{{lang}}">
         </nebula-language>
         <nebula-resources
                 id="locales"
@@ -38,7 +33,7 @@
                 resources="{{resources}}">
         </nebula-resources>
         <!--
-            the form itself.
+            Das Formular.
         -->
         <animad-enclosure-form id="form" data="{{_data}}" resources="[[resources]]" lang="[[lang]]" auto-validate></animad-enclosure-form>
         <!-- 
@@ -46,30 +41,30 @@
         -->
         <paper-button class="send" on-tap="_sendForm" raised>
             <iron-icon icon="animad-icons:send"></iron-icon>
-             [[$t('animad_enclosure_create_button_save')]]
+            [[$t('animad_enclosure_create_button_save')]]
         </paper-button>
         <paper-button class="reset" on-tap="_resetForm" raised>
             <iron-icon icon="animad-icons:erase"></iron-icon>
-             [[$t('animad_enclosure_create_button_reset')]]
-        </paper-button>      
+            [[$t('animad_enclosure_create_button_reset')]]
+        </paper-button>
     </template>
     <script>
         /**
-         * # Formular zum Erstellen von einem 'Enclosure'
-         * `<animad-anclosure-create-form>` stellt ein Formular zur Verfügung, über das man ein
-         * neues 'Enclosure' mit all seinen Attributen erstellen kann.
+         * # Formular zum Bearbeiten von einem 'Enclosure'
+         * `<animad-anclosure-update-form>` stellt ein Formular zur Verfügung, über das man ein
+         * vorhandenes 'Enclosure' mit all seinen Attributen bearbeitet werden kann.
          * ## Anwendung in der Applikation
-         * <link rel="import" href="[Pfad zu meinen Abhängigkeiten]/animad-enclosure/animad-enclosure-create-form.html">
+         * <link rel="import" href="[Pfad zu meinen Abhängigkeiten]/animad-enclosure/animad-enclosure-update-form.html">
          * ...
-         * <animad-enclosure-create-form post-url="[URL an die die Daten geschickt werden]"></animad-enclosure-create-form>
+         * <animad-enclosure-update-form get-url="[zu ladende Ressource]" post-url="[URL an die die Daten geschickt werden]"></animad-enclosure-update-form>
          * ...
          * 
          * @customElement
          * @polymer
          *
          */
-        class AnimadEnclosureCreateForm extends AnimadFormBehavior(Nebula.PolyglotBehavior(Polymer.Element)) {
-            static get is() { return 'animad-enclosure-create-form'; }
+        class AnimadEnclosureUpdateForm extends AnimadFormBehavior(Nebula.PolyglotBehavior(Polymer.Element)) {
+            static get is() { return 'animad-enclosure-update-form'; }
 
             static get properties() {
                 return {
@@ -89,7 +84,12 @@
             }
 
             connectedCallback() {
-                
+                super.connectedCallback();
+                // Daten ins Formular laden 
+                // (Methode wird über *FormBehavior 
+                // zur Verfügung gestellt)
+                this._loadFormData();
+
                 // Über den i18n Kontext wird der 
                 // FormBehavior der Prefix übergeben,
                 // um die richtigen Toast Meldungen 
@@ -99,6 +99,6 @@
 
         }
 
-        customElements.define(AnimadEnclosureCreateForm.is, AnimadEnclosureCreateForm);
+        customElements.define(AnimadEnclosureUpdateForm.is, AnimadEnclosureUpdateForm);
     </script>
 </dom-module>
