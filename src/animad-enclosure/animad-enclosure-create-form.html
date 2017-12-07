@@ -52,11 +52,11 @@
         -->
         <paper-button class="send" on-tap="_sendForm" raised>
             <iron-icon icon="animad-icons:send"></iron-icon>
-             [[t('create_button_save')]]
+             [[t('button_save')]]
         </paper-button>
         <paper-button class="reset" on-tap="_resetForm" raised>
             <iron-icon icon="animad-icons:erase"></iron-icon>
-             [[t('create_button_reset')]]
+             [[t('button_reset')]]
         </paper-button>      
     </template>
     <script>
@@ -82,7 +82,7 @@
             static get properties() {
                 return {
                     /*
-                     * Das 'domain' property wird benötigt, um den richtigen Pfad 
+                     * Das '_domain' property wird benötigt, um den richtigen Pfad 
                      * zu den i18n Werten zu erzeugen. Es wird in jedem Element 
                      * benötigt, in dem die I18nBehavior verwendet wird.
                      */
@@ -91,7 +91,7 @@
                         value: 'animad'
                     },
                     /*
-                     * Das 'entity' property wird benötigt, um den richtigen Pfad 
+                     * Das '_entity' property wird benötigt, um den richtigen Pfad 
                      * zu den i18n Werten zu erzeugen. Es wird in jedem Element 
                      * benötigt, in dem die I18nBehavior verwendet wird.
                      */
