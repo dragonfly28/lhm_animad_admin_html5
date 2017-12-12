@@ -1,0 +1,20 @@
+{
+  "name": "nebula-i18n",
+  "version": "2.0.1",
+  "description": "i18n localization using AirBnb Polyglot.",
+  "private": true,
+  "license": "ISC",
+  "author": "Chris Beckett <chrisb@arsnebula.com>",
+  "homepage": "https://github.com/arsnebula/nebula-i18n",
+  "repository": "arsnebula/nebula-i18n",
+  "scripts": {
+    "test": "wct --plugin=local",
+    "test:debug": "wct --plugin=local --persistent=true",
+    "test:sauce": "wct --plugin=sauce",
+    "start": "browser-sync start -c bsconfig.js"
+  },
+  "devDependencies": {
+    "browser-sync": "latest",
+    "web-component-tester": "^6.0.0"
+  }
+}

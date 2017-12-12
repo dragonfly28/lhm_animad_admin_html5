@@ -1,0 +1,123 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../nebula-element-mixin/nebula-element-mixin.html">
+
+<!--
+`<nebula-resources>` is a custom element to load resource files for use with localization. It uses the browser [Fetch API](http://caniuse.com/#feat=fetch) to read a **JSON** file containing string resources.
+
+Phrases should be grouped beneath the BCP47 language code. A resource file can contain one or more languages according to your localization design. A common use case is to have a separate resources file for each language the application supports, and load the appropriate language based on browser settings or user preference.
+
+**Sample Resource File**
+
+```json
+{
+  "en": {
+    "greeting": "Hello"
+  },
+  "fr": {
+    "greeting": "Bonjour"
+  },
+  "de": {
+    "greeting": "Hallo"
+  }
+}
+```
+
+Localization strings can include variables, and support pluralization. <b><i>For additional information on using variables and supporting pluralization in resources, please see the [Polyglot API](http://airbnb.io/polyglot.js/) documentation.</i></b>
+-->
+<script>
+(function() {
+  'use strict'
+
+  // symbols for private members
+  const fetchResources = Symbol()
+
+  // symbols for protected members
+  const observe = Symbol.for('Nebula.ElementMixin.observe')
+  const fire = Symbol.for('Nebula.ElementMixin.fire')
+
+  class NebulaResources extends Nebula.ElementMixin(Polymer.Element) {
+
+    /**
+     * Gets the custom element tag name.
+     * @protected
+     * @ignore
+     */
+    static get is() { return 'nebula-resources' }
+
+    /**
+     * Gets the Polymer property definitions for data binding.
+     * @protected
+     * @ignore
+     */
+    static get properties() {
+      return {
+        /**
+         * The name of the JSON file to retrieve from the specified path.
+         * If the `.json` file extension is not included, it will be appended automatically.
+         */
+        file: {
+          type: String
+        },
+        /**
+         * The data to validate against the constraints.
+         */
+        path: {
+          type: String,
+          value: '.'
+        },
+        /**
+         * The contents of the resource file (once loaded).
+         */
+        resources: {
+          type: Object,
+          readOnly: true,
+          notify: true
+        }
+      }
+    }
+
+    /**
+     * Creates an instance of the custom element.
+     */
+    constructor() {
+      super()
+      this[observe]('file, path', this[fetchResources])
+    }
+
+    /**
+     * The Polymer lifecycle callback triggered when data-binding initialization is complete.
+     * @protected
+     */
+    ready() {
+      super.ready();
+      this.setAttribute('hidden', '')
+    }
+
+    /**
+     * A property observer triggered when the property value of `file` or `path` is changed.
+     * Fetches the resource file from the server and sets the `resources` property with the contents.
+     * @param {string} file - The updated `file` property value.
+     * @param {string} path - The updated `path` property value.
+     * @private
+     */
+    [fetchResources](file, path) {
+      if (!(file && path)) return
+
+      if (!/\/$/ig.test(path)) path = path + '/'
+      if (!/.json$/ig.test(file)) file = file + '.json'
+      const url = this.resolveUrl(path + file)
+
+      fetch(url).then((response) => {
+        return response.json()
+      }).then((resources) => {
+        this._setResources(resources)
+        this[fire]('loaded', resources)
+      }).catch((error) => {
+        this[fire]('error', error)
+      })
+    }
+  }
+
+  customElements.define(NebulaResources.is, NebulaResources)
+}())
+</script>
