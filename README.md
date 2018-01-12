@@ -1,6 +1,6 @@
 # Animad Polymer Demo Anwendung
 
-[![Build Status](https://travis-ci.org/xdoo/lhm_animad_admin_html5.svg?branch=master)](https://travis-ci.org/xdoo/lhm_animad_admin_html5)
+[![Build Status](https://travis-ci.org/dragonfly28/lhm_animad_admin_html5.svg?branch=master)](https://travis-ci.org/dragonfly28/lhm_animad_admin_html5)
 
 ### Quickstart
 
