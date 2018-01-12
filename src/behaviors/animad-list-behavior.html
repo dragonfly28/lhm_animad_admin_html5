@@ -1,0 +1,189 @@
+<script>
+    /**
+     * Behavior, um einer beliebigen Liste (Read, Delete) alle Eigenschaften
+     * wie Properties und Methoden zu geben, die es benötigt um mit dem Server zu
+     * kommunizieren.
+     *
+     * @polymerMixinClass
+     */
+    /* @polymerMixin */
+    let AnimadListBehavior = (superClass) => class extends superClass {
+
+        static get properties() {
+            return {
+              data: {
+                type: Array,
+                value() {
+                  return [];
+                }
+              },
+              /*
+               _deleteInfo enthält beim Löschen über Papierkorb die Information über den zu
+               löschenden Datensatz. Nach Bestätigung oder Abbruch des Löschvorgangs wird
+               die Information aus _deleteInfo wieder gelöscht.
+              */
+              _deleteInfo: {
+                type: String,
+                value: ""
+              },
+              /*
+               _deleteItem enthält beim Löschen über Papierkorb den zu löschenden Datensatz.
+               Nach Bestätigung oder Abbruch des Löschvorgangs wird _deleteItem wieder
+               in den Initial-Zustand zurückgesetzt.
+              */
+              _deleteItems: {
+                type: Array,
+                value: []
+              },
+              /*
+                _selectedItems enthält alle in der Liste selektierten Datensätze
+              */
+              _selectedItems: {
+                type: Array,
+                value() {
+                  return [];
+                }
+              },
+              /* _backendData enthält die Antwort des Backend-Aufrufs als JSON String*/
+              _backendData: {
+                type: Object,
+                observer: '_backendDataChanged'
+              },
+              // backend stuff
+              /*
+                 die URL zum Backend
+              */
+               url: {
+                 type: String,
+                 value: "http://localhost:39146/keepers"
+               },
+               /*
+                 doPagination gibt an, ob die Datensätze seitenweise angezeigt werden (true)
+                 oder ob alle Datensätze gescrollt werden sollen (false). Standard: false
+               */
+               doPagination: {
+                 type: Boolean,
+                 value: false
+               },
+               /*
+                 pageSize gibt an, wieviele Zeilen bei seitenweiser Anzeige pro Seite
+                 angezeigt werden sollen. Standard: 20 Zeilen
+               */
+               pageSize: {
+                 type: Number,
+                 value: 20
+               },
+               /*
+                 _page ist die aktuell angezeigte Seite.
+               */
+               _page: {
+                 type: Number,
+                 value: 0
+               },
+               /*
+                 _pages ist die Anzahl der Seiten insgesamt
+               */
+               _pages: {
+                 type: Array,
+                 value: null
+               },
+            }
+        }
+
+        // Observers
+        // Override to handle backendData individually
+        _backendDataChanged(backendData, backendDataOld){
+          // Assignmetn triggers observer _dataChanged
+          this.data = backendData;
+        }
+
+        // Callback methods
+        ready() {
+          super.ready();
+          this._loadData();
+          /* Für Suche über Data-Provider (Lazy Loading)
+          this.size = 200;
+          this.dataProvider = function(params, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+              callback(JSON.parse(xhr.responseText).result);
+            };
+            var index = params.page * params.pageSize;
+            xhr.open('GET', 'https://demo.vaadin.com/demo-data/1.0/people?index=' + index + '&count=' + params.pageSize, true);
+            xhr.send();
+          }
+          */
+        }
+
+        // Protected methods
+        // Deletes all data that is contained in array _deleteItems
+        _deleteSelectedRows() {
+          var items = this._deleteItems;
+          var allItems = this.data;
+
+          // loop over all items to delete
+          for (var i in items) {
+            var j = this.data.indexOf(items[i]);
+            // Backend Call
+            this._deleteItem(this.data[j]);
+
+            // Update view
+            allItems.splice(j, 1);
+          }
+
+          // triggers observer _dataChanged
+          this.data = allItems;
+          this.notifyPath('data.length');
+        }
+
+        // Pagination methods
+        _isSelected(page, item) {
+            return page === item - 1;
+        }
+        _select(e) {
+          this._page = e.model.item - 1;
+        }
+        _next() {
+          this._page = Math.min(this._pages.length - 1, this._page + 1);
+        }
+        _prev() {
+          this._page = Math.max(0, this._page - 1);
+        }
+
+        // Backend methods
+
+        // Search
+        _loadData(){
+          // TBD: error handling
+          fetch(this.url, {
+              method: 'GET',
+              headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+              }
+            }).then(response => response.json()).then(data => {
+              this._backendData = data;
+            });
+        }
+
+        // Delete
+        _deleteItem(item) {
+          // TBD Handle relations (or is this backend stuff??)
+          var url = this.url+'/'+item.id;
+          fetch(url, {
+              method: 'DELETE',
+              headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+              }
+            }).then(response => {
+              if (response.status === 200 || response.status === 202 || response.status === 204) {
+                // TBD Success notification
+              }
+              else {
+                // TBD Error notification
+              }
+            });
+        }
+    };
+</script>
