@@ -5,8 +5,7 @@
     "src/**/*",
     "images/**/*",
     "locales/**/*",
-    "bower.json",
-    "service-worker.js"
+    "bower.json"
   ],
   "extraDependencies": [
     "manifest.json",
